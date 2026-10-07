@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "qa-signoff",
+  "description": "QA sign-off skills: from a crawled web app to reviewed test cases and Playwright tests.",
+  "owner": {"name": "Ivan Rublev", "url": "https://ivanrublev.com"},
+  "plugins": [
+    {
+      "name": "qa-signoff",
+      "description": "Crawl a web app per role and device, write a QA spec, turn it into reviewed test cases, and write the Playwright tests.",
+      "source": "./",
+      "category": "testing"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "qa-signoff",
+  "interface": {
+    "displayName": "QA Signoff"
+  },
+  "plugins": [
+    {
+      "name": "qa-signoff",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/IvanRublev/qa-signoff.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Testing"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "qa-signoff",
+  "version": "0.1.0",
+  "description": "Crawl a web app per role and device, write a QA spec, turn it into reviewed test cases, and write the Playwright tests.",
+  "author": {"name": "Ivan Rublev", "url": "https://ivanrublev.com"},
+  "license": "Apache-2.0",
+  "keywords": ["qa", "playwright", "regression", "test-cases"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "QA Signoff",
+    "shortDescription": "From a crawled web app to reviewed test cases",
+    "longDescription": "Crawl a web app by role and device, produce a reviewed QA specification and test-case backlog, and generate Playwright tests for release sign-off.",
+    "developerName": "Ivan Rublev",
+    "category": "Testing",
+    "capabilities": ["Playwright test generation", "Browser test automation", "Release regression checks"],
+    "defaultPrompt": [
+      "Run QA sign-off for this web app",
+      "Create a Playwright regression suite",
+      "Check whether this release is ready"
+    ]
+  }
+}
