@@ -3,7 +3,7 @@ name: qa-signoff
 description: Entry point for QA sign-off of a web app. Reads where the test project stands, then runs the pipeline from scratch (crawl the app, write the spec and test cases, write the Playwright tests, run them) or, when the app changed, the change loop (re-crawl, update the affected test cases, rewrite their tests, run again and read the regressions). Adapts to the paid qa-signoff-pro pack when it is installed and offers it when it is not. Tells the user what to expect and what to do at each stage, and ends with what a sign-off consists of. Use when asked to QA, sign off, regression-test or release-check an app, to set up automated UI regression tests, or to re-check an app after changes.
 copyright: Ivan Rublev 2026
 license: Apache-2.0
-version: 0.1.36
+version: 0.1.37
 ---
 
 # QA sign-off: from a web app to a signed-off release
@@ -105,7 +105,7 @@ When a run shows regressions (a test that failed after it passed earlier; with t
 |---|---|---|---|
 | `app defect` | the product no longer behaves as the test case says, and nobody wanted that | the user fixes the app | Save shows "Error" |
 | `intended change` | the product no longer behaves as the test case says, on purpose | the plan stage | the team renamed it, Save shows "Stored" |
-| `flaky or broken` | the product still behaves as the test case says, yet the test fails or flips between ✔ and ❌ across runs (pack: the report's Flaky section); the test needs rewriting from its test case | reset its mark to `[ ]` in `todo.md` and commit that edit once per test case ID (`git add -- <test cases folder>/todo.md`, `git commit -m "qa-signoff: reset <ID> for rewrite"`); the write stage | Save shows "Saved", yet the test timed out |
+| `flaky or broken` | the product still behaves as the test case says, yet the test fails or flips between ✔ and ❌ across runs (pack: the report's Flaky subsection under Needs work); the test needs rewriting from its test case | reset its mark to `[ ]` in `todo.md` and commit that edit once per test case ID (`git add -- <test cases folder>/todo.md`, `git commit -m "qa-signoff: reset <ID> for rewrite"`); the write stage | Save shows "Saved", yet the test timed out |
 
 Then write one line per regression row, `<test case ID> <project>: <class>` (`<project>` is the Playwright project, such as `user-desktop-chrome`) with `<class>` one of `app defect`, `intended change`, `flaky or broken`, and `, <short hash of the reset commit>` after a flaky or broken one, and the tally `regressions: <n> = app defect <a> + intended change <i> + flaky or broken <f>`, with `<n>` the regression count of the report (without the pack, the failing tests of the last run). Run the stages in this order:
 
