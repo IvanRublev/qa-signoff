@@ -1,16 +1,18 @@
-# QA Signoff
+# qa-signoff: agent skills that write QA test cases and Playwright tests
+
+qa-signoff is a set of agent skills that write QA test cases and Playwright regression tests for UI-heavy web apps, and report whether a release is ready to sign off. [Install it](#install) with one command.
 
 Point an AI agent at your web app and get reviewed test cases and a Playwright regression suite, ready for release sign-off.
 
-QA Signoff is for small SaaS teams, consultancies and software houses that ship UI-heavy products to paying customers or clients. It gives you a regression suite and a release sign-off without a bigger QA department. On a web app, AI agents wrote the Playwright tests about 4× faster and 3× cheaper than a Playwright agency ([full regression-test report on GitHub](https://github.com/IvanRublev/kimai-qa-playwright-report)). The suite and its sign-off record go to your client at delivery as proof of what was tested.
+qa-signoff is for small SaaS teams, consultancies and software houses that ship UI-heavy products to paying customers or clients. It gives you a regression suite and a release sign-off without a bigger QA department. On a web app, AI agents wrote the Playwright tests about 4× faster and 3× cheaper than a Playwright agency ([full regression-test report on GitHub](https://github.com/IvanRublev/kimai-qa-playwright-report)). The suite and its sign-off record go to your client at delivery as proof of what was tested.
 
-The agent crawls your app as each user role, drafts the test cases a QA engineer would plan, checks them for gaps and overlap, and turns them into Playwright tests you keep in your repository. You keep the judgment calls: choose the roles, devices and approvals, decide which findings matter, and sign off. The agent takes the crawling, the drafting and the repetitive test code, so QA Signoff is a speedup tool for the person who knows what matters.
+The agent crawls your app as each user role, drafts the test cases a QA engineer would plan, checks them for gaps and overlap, and turns them into Playwright tests you keep in your repository. You keep the judgment calls: choose the roles, devices and approvals, decide which findings matter, and sign off. The agent takes the crawling, the drafting and the repetitive test code, so qa-signoff is a speedup tool for the person who knows what matters.
 
 ## What you get
 
 Start with `qa-signoff`. It reads where your test project stands and runs the stages that are left. After a change to the app it runs the change loop: re-crawl, update the affected test cases, rewrite their tests, run again.
 
-[QA Signoff Pro](https://go.ivanrublev.com/get-qa-signoff-pro-gh-fr) steps are marked as `Pro:` in the following diagram.
+[qa-signoff Pro](https://go.ivanrublev.com/get-qa-signoff-pro-gh-fr) steps are marked as `Pro:` in the following diagram.
 
 ```
                         ┌────────────────────────────────────────┐
@@ -168,7 +170,7 @@ Start a Kimi Code session, then:
 3. Paste `https://github.com/IvanRublev/qa-signoff` and press `Enter`.
 4. Choose **Trust and install**.
 
-To update, run `/plugins`, move the cursor to **QA Signoff** and press `R`.
+To update, run `/plugins`, move the cursor to **qa-signoff** and press `R`.
 
 
 #### Qwen Code
@@ -195,7 +197,7 @@ cp -r qa-signoff/skills/* .agents/skills/
 
 In your test project, ask your agent to run `qa-signoff`.
 
-## Go further with [QA Signoff Pro](https://go.ivanrublev.com/get-qa-signoff-pro-gh-fr)
+## Go further with [qa-signoff Pro](https://go.ivanrublev.com/get-qa-signoff-pro-gh-fr)
 
 Pro reduces test writing time 4.9×, adds regression tracking and a release gate:
 
