@@ -3,7 +3,7 @@ name: qa-write-test-cases
 description: "Turn a qa-spec.md from qa-write-spec (Site Map, guidance, and Journeys section) into a prioritized QA test case backlog. Use when asked to plan what to test, scope QA coverage for a site, or write test cases from a QA spec — before any test code exists — or to update the backlog after qa-spec.md changed. Methodology: Google Testing Standards (https://abseil.io/resources/swe-book) + OWASP Top 10:2025 (https://top10.owasp.org/2025/), adapted from daymade/claude-code-skills' qa-expert skill."
 copyright: Ivan Rublev 2026
 license: Apache-2.0
-version: 0.5.2
+version: 0.5.3
 ---
 
 # QA spec → QA test case backlog
@@ -55,14 +55,7 @@ Files: read `qa-spec.md` from the test project root (ask the user if it isn't th
 
 ## Re-run over an existing backlog
 
-If the test cases folder already holds test cases, treat them as the starting point:
-
-- **Match before writing.** For each test case this run would write (step 7), look for an existing test case that tests the same thing: same Feature, lead role, angle (or OWASP category), entry point, and Journey. `python3 <skill dir>/scripts/qa_tickets.py index <test cases folder>` prints each existing test case's ID, Feature, Tier, Type, Journey, Projects and title on one line; open only the test cases whose Feature matches. A match keeps its ID and file.
-- **Leave matched test cases unchanged** unless the spec change alters what they test. An unchanged test case keeps its text byte for byte, so its criteria hash and ticked criteria survive. The exception is a change to the hash recipe in `qa_tickets.py`: when step 10's `check` reports a stale hash on a test case this run left unchanged, run `python3 <skill dir>/scripts/qa_tickets.py rehash <test-case.md>` on it (or on the test cases folder when every stale test case is unchanged). It writes the current hash into the test case and into line 1 of its test file, keeping every mark, so the test case stays implemented. It resolves `**Test file:**` against the test cases folder's parent. It refuses a test case whose stored hash no earlier recipe reproduces from its current text, because its How to build or criteria were edited; a test case whose test file's line 1 doesn't carry the stored hash, because that test already lags the test case; and a test case marked `[x]` in `todo.md` whose test file is missing. Treat a refused test case as a changed test case. When a test case's How to build steps or acceptance criteria must change, edit them, recompute its criteria hash (step 7, Hash rule), untick all its criteria, and reset its `todo.md` mark to `[ ]`, so the implementer rebuilds the test case's test.
-- **Refresh the automation fields of every matched test case** from the current Playwright config gate, even when nothing else changes: `**Projects:**`, `**Test file:**`, and the Test file rules block (step 7). `**Projects:**` and `**Test file:**` are outside the hashed text (step 7, Hash rule). The Test file rules block is part of How to build, so a change to it — a new Test file path, session, or self-skip line — follows the rule above, and the implementer moves or updates the test file.
-- **Number new test cases after the highest existing number** in their CATEGORY. Never reuse a number, even one left free by a deleted test case.
-- **Obsolete test cases** — a test case whose source item is gone from the spec or is now marked `Excluded:` — are listed to the user, who decides whether to delete them. A test case whose behavior is listed under `todo.md`'s Spec gaps is not obsolete: it documents a tested behavior that the spec has no entry for. Delete only the ones the user confirms. Name each one's test file (its `**Test file:**`) in the list, since deleting the test case leaves that file without a test case.
-- **Update `todo.md`** per step 10.
+If the test cases folder already holds test cases, read [`references/re-run.md`](references/re-run.md) before step 1 and treat them as the starting point: match before writing, leave matched test cases unchanged, refresh their automation fields, number new test cases after the highest existing number, list obsolete test cases to the user, and update `todo.md` per step 10.
 
 ## Playwright config gate
 
@@ -102,20 +95,7 @@ Run this gate before step 0. Test files written from these test cases must land 
    - **Security** — any item that takes input, holds auth, or moves data. Scope is fixed, not open-ended: OWASP Top 10:2025 coverage, input validation, authentication/authorization checks, data protection — run it through the OWASP checklist below.
    - **Performance** — only for items the map flags as high-traffic or data-heavy; don't apply everywhere.
 
-4. **OWASP checklist — run it on every input/auth/data surface, inventory items AND named journeys.** Some categories (Broken Access Control, Authentication Failures) only surface across a multi-step journey, not at single-item granularity — run the checklist against each named journey from step 2 as well as each inventory item from step 1. For each surface where a category applies, write one test case per category. A protection enabled once in config needs one test case proving it on a representative surface, not one per surface. The categories are [OWASP Top 10:2025](https://top10.owasp.org/2025/) — use this edition's IDs and names, and its category pages for what each covers; each row's "applies when" decides whether it applies to this project:
-
-   1. **A01: Broken Access Control** — applies when roles or data ownership differ, or the app fetches a user-supplied URL: privilege escalation, another user's record by ID (IDOR), forced browsing to admin routes, CSRF, SSRF
-   2. **A02: Security Misconfiguration** — applies to every deployed app: default credentials, missing security headers, permissive CORS, directory listing
-   3. **A03: Software Supply Chain Failures** — applies when the UI or response headers disclose component names or versions (about page, `X-Powered-By`); dependency scanning itself is outside this backlog
-   4. **A04: Cryptographic Failures** — applies when the app handles credentials or sensitive data: HTTPS and HSTS, secure cookie flags, password hashing, no secrets in URLs
-   5. **A05: Injection** — applies when input reaches a query, template, or command: SQL injection, XSS, command injection
-   6. **A06: Insecure Design** — applies when a flow can be abused as designed: rate limiting, anomaly detection, business-rule bypass
-   7. **A07: Authentication Failures** — applies when users log in: session hijacking, session fixation, weak password or reset flow
-   8. **A08: Software or Data Integrity Failures** — not in this checklist. Business data integrity (cascades, double billing, inconsistent related state) is a product flaw, not security: cover it with Functional or Negative test cases, not `SEC` test cases
-   9. **A09: Security Logging and Alerting Failures** — applies when the app keeps an audit or security log a tester can inspect
-   10. **A10: Mishandling of Exceptional Conditions** — applies when an error path is reachable from the UI: stack traces or system errors shown to the user, failing open when a check errors
-
-   **OWASP target:** at least 90% of the applicable categories tested. Decide applicability per project from each row's "applies when"; A08 is never applicable. A category is tested when at least one test case covers it. `qa-review-test-cases` checks this target.
+4. **OWASP checklist — run it on every input/auth/data surface, inventory items AND named journeys.** Read [`references/owasp-checklist.md`](references/owasp-checklist.md): it holds the ten categories with their "applies when" lines and the OWASP target (at least 90% of the applicable categories tested).
 
 5. **Tier ratio — weight the backlog across two tiers, roughly 20% Journey-level / 80% Interaction-level**. Security and Performance test cases (step 3) sit outside this ratio entirely — excluded from the count on both sides. Still tag them Journey-level or Interaction-level per where they were derived from, for `Feature` grouping — just don't count them toward the 20/80 split:
    - **Journey-level** (~20%) — walks a full named journey end to end. Catches what only shows up across steps: state carried forward, session/timing issues, whether the end goal is reachable at all.
@@ -129,58 +109,7 @@ Run this gate before step 0. Test files written from these test cases must land 
    - **Document the environment** — the environments a test case runs in are its `**Projects:**` (step 7); Arrange names locale or other conditions whenever the outcome could vary by them. Never hand-write browser or viewport sizes: screen sizes come from the Playwright device profiles in the spec's `Environments:` line. **Environment split:** any test case whose Arrange, Act, or asserts depend on a fact in one of qa-spec.md's Environment differences entries is split per combination of those entries' breakpoints, each standing for the environments its entry lists: each test case's `**Projects:**` lists exactly the environments its combination shares, and a combination that shares none gets no test case.
    - **Don't silently skip a test case** — every item from steps 1-2 gets one (a `Deferred:` journey is listed as deferred, an `Excluded:` item as excluded, instead); an "obvious" case left unwritten is invisible to everyone but you.
 
-7. **Write each test case self-contained** — no separate test-case document to reference; the test case is the spec. If you have a backlog test case template (the user's or the project's), read it first and keep its mandatory sections and its own rules (checkbox format, empty markers) — re-check the mapping below against whatever it currently requires. Without one, the sections below, in this order, are the whole format. Either way, this skill fixes where QA-test-case content goes:
-
-   - **Test case ID format** — `TC-[CATEGORY]-[NUMBER]`, where CATEGORY is uppercase letters and digits and NUMBER is 3 digits, zero-padded, counted per CATEGORY from `001`:
-
-     ```
-     Examples:
-     - TC-CLI-001 (CLI tests)
-     - TC-WEB-042 (Web tests)
-     - TC-API-103 (API tests)
-     - TC-SEC-007 (Security tests)
-     ```
-
-     CATEGORY isn't limited to these four — use whichever fits the inventory item (pick a closer one when it fits) — but always use `SEC` for any test case produced by step 4's OWASP checklist regardless of surface.
-   - **Heading** — `## <Test case ID> - <Title>`, where `<Title>` is an outcome-readable title. Each section from Parent to Potential Bugs is a `### <section name>` heading (e.g. `### How to build`), with no other `##` or `###` heading inside a section.
-   - **Directly under the heading, before Parent** — add `**Priority:** <P0-P3>` (step 8), `**Tier:** <Journey-level/Interaction-level>` (step 5), `**Type:** <one or more of Functional/Boundary/Negative/Cross-cutting/Security/Performance>` (step 3), `**Estimated Time:** <rough manual-execution minutes>` (a backlog-sequencing aid, not a gate), and `**Feature:** <shared component or feature name>` — mandatory on every test case, not only ones isolation forced apart; lets test cases sharing a component (same entry point or split across several) be found together. A Journey-level test case that walks a named journey also carries `**Journey:** <journey ID from the spec>`. **Projects rule:** every test case also carries `**Projects:** <project>, …` — the lead role's project for every environment — or, for a test case that depends on Environment differences entries, exactly the environments the Environment split (step 6) gives it — named as in the Playwright config gate (e.g. `admin-desktop-chrome, admin-iphone-13`); the lead role is `no-login` when the test starts logged out (login page, password reset, a logged-out user's redirects). **Test file rule:** every test case also carries `**Test file:** <tests root>/<role>/<Test case ID>.spec.ts` — the exact path, directly in the role folder; the role folder makes the file run in every project of that role. When Projects lists some but not all of the role's environments, the test skips itself in every other project (Test file rules block).
-
-     None of these fields are part of the generic template; they're specific to this skill's test cases.
-   - **Write order and back-references** — write Journey-level test cases first, then Interaction-level ones, each in spec order (Backlog document). Parent, Relates to and Blocked by cite only a test case that already exists: one kept from an earlier run, or one written earlier in this run. Test case numbers can't show this order, because each CATEGORY counts separately, so this rule replaces a template's lower-number rule.
-   - **Parent** — the Journey-level test case this one descends from, if this is an Interaction-level test case scoped under a named journey. Omit it when there is none (the template's omission rule, else leave the section out).
-   - **What to build** — the user story: role, action, and the "so that" clause drawn from the journey or business goal (step 2) this test case serves.
-   - **How to build** — Arrange-Act read as test case fields: **Arrange** (the state the world must be in before the test starts: role, data, prior step) and **Act** (what the user/tester does, as a sequence, in plain terms) and **Cleanup** (step 6), plus any constraint on how the test must be run that would otherwise let a false pass through (e.g. "use the real sandbox response, not a mock"). Arrange never lists a UI login for the lead role: the session comes from the project. Then a **Test file** block, filled in for this test case and repeated in every test case, so the implementer needs nothing beyond the test case:
-
-     ```markdown
-     **Test file rules:**
-     - Write exactly one file at `<Test file>`. Every test in it belongs to this test case, and every test title starts with `<Test case ID>: `.
-     - Line 1 of the file is the comment named in the acceptance criteria's `Output test file contains comment` item.
-     - The Playwright project supplies the browser or device: never set a viewport, user agent, or device in the test.
-     - Session: <exactly one of>
-       - Starts logged in as <role>: the project injects the session. Do not log in through the UI.
-       - Starts logged out (`no-login`): there is no session. Log in through the UI only where an Act step says so, with credentials from `process.env.<ROLE>_USERNAME` and `process.env.<ROLE>_PASSWORD` (`.env`, loaded by the Playwright config; `<ROLE>` is the role name uppercased, with every character other than a letter or digit turned into `_`, e.g. `ADMIN`, `CUSTOMER_RESTRICTED`), never literal values.
-     - <only with a helper role: a crawled role other than the lead role> The <helper role> steps run in a second browser context: `const helper = await browser.newContext({ storageState: '<helper role's storageState path from the Playwright config>' })`, closed at the end of the test.
-     - <only with logged-out steps besides the lead role's> The logged-out steps run in a second browser context with no session: `const guest = await browser.newContext({ storageState: { cookies: [], origins: [] } })`, closed at the end of the test. A plain `browser.newContext()` inherits the project's session. A UI login in it takes credentials from `process.env.<ROLE>_USERNAME` and `process.env.<ROLE>_PASSWORD`, as on the logged-out Session line.
-     - <only when Projects lists some but not all of the role's environments> The first line of every test is `test.skip(!['<project>', …].includes(test.info().project.name), '<reason>')`.
-     - Do not edit the Playwright config or other test cases' test files.
-     ```
-
-     Drop the lines marked "only …" when they don't apply, and replace every `<…>` with this test case's values.
-   - **Acceptance criteria** — lead with **Assert:**, then one checkbox list, each item binary pass/fail, observable, no prose intent. For everything step 3's Negative/Security angles say must NOT happen or must stay unchanged, add an item to this same list prefixed `Absence check:` — a separate section is not the template's shape; a positive item announces itself when missing, an absence item doesn't unless it's written down. No overall pass/fail summary line ("PASS if all items above pass, FAIL otherwise"): the checkbox list already implies it. Name every spec-stated value the test checks (a length limit, a boundary value) in the criterion or How to build step that uses it: the other sections, UX behavior included, are outside the hash.
-   - **UX behavior** — the observable states/surfaces/error paths a user would see, distinct from the pass/fail checklist. If the test case is backend/security-only with nothing a user sees, use the template's "no visible surface" marker, else `No user-facing surface` plus what the test checks instead.
-   - **Relates to** — other TC test cases worth reading alongside this one for context, even outside this test case's own Feature (e.g. a Journey-level test case relating to an Interaction-level test case for a component that journey passes through), one per line, else `None`. Back-references only (write order above).
-   - **Blocked by** — any already-written test case that must land first (e.g. a permission-model test case this one assumes exists), one per line, else `None — can start immediately`.
-   - **Potential Bugs** (last, after Blocked by) — edge cases or security concerns adjacent to this test case that aren't already an Acceptance criteria item. Flags risk for whoever executes or automates the test case without forcing every guess into a formal checklist item.
-
-   Example (Acceptance criteria only):
-   - [ ] Payment decline shows an on-page message naming the reason, cart and shipping details intact
-   - [ ] Absence check: retrying with a different card does not require re-entering shipping info
-   - [ ] Absence check: no stack trace or raw processor error reaches the page
-   - [ ] Output test file contains comment: `// TC-WEB-042 criteria-hash: <hash>` as its first line
-
-   Together, this list is the whole mechanism for redoing the test later — describe outcomes, never the mechanism that produces them. The last item is the drift guard: once a test case is automated, editing this list or the How to build steps changes the hash, so the test file's first line goes stale and shows the test needs rebuilding.
-
-   **Hash rule.** `<hash>` fingerprints what the test does and asserts: every How to build line, Test file rules block included, and every Acceptance criteria line except `>` notes; blank lines and trailing spaces don't count, and each section ends at the next `##` or `###` heading. The hashed text excludes the `Output test file contains comment` criterion itself, which breaks the circle of a hash covering its own line, and excludes checkbox marks, so ticking a criterion off leaves the hash unchanged. `<skill dir>/scripts/qa_tickets.py` owns the recipe: `python3 <skill dir>/scripts/qa_tickets.py write <test-case.md>` writes the computed value into that criterion and prints the test file's first line, `hash` prints that line, `check <test cases folder>` lists test cases whose stored hash is missing or stale, and `rehash` moves an unchanged test case and its test file onto a changed recipe (Re-run over an existing backlog). The test file carries the same value as its first line. Whenever this skill adds or changes a test case's How to build steps or acceptance criteria — in this step, in step 9's closing pass, or on a re-run — recompute the hash and rewrite it as the last edit to that test case.
+7. **Write each test case self-contained** — read [`references/test-case-format.md`](references/test-case-format.md) before writing the first test case: it defines the test case ID format, heading, attributes, Projects rule, Test file rule, How to build, Acceptance criteria and the Hash rule. Write every test case in that format.
 
 8. **Assign priority — Priority scale:** the severity of the defect the test would catch.
 
