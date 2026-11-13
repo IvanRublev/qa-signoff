@@ -1,0 +1,18 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "qa-signoff",
+  "displayName": "QA Signoff",
+  "version": "0.1.0",
+  "description": "Crawl a web app per role and device, write a QA spec, turn it into reviewed test cases, and write the Playwright tests for release sign-off.",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Run QA sign-off for this web app",
+    "Create a Playwright regression suite",
+    "Check whether this release is ready"
+  ],
+  "author": {"name": "Ivan Rublev", "url": "https://ivanrublev.com"},
+  "homepage": "https://qa-signoff.com",
+  "repository": "https://github.com/IvanRublev/qa-signoff",
+  "license": "Apache-2.0",
+  "keywords": ["qa", "playwright", "regression", "test-cases"]
+}

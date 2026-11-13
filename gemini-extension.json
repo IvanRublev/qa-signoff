@@ -1,0 +1,5 @@
+{
+  "name": "qa-signoff",
+  "version": "0.1.0",
+  "description": "Crawl a web app per role and device, write a QA spec, turn it into reviewed test cases, and write the Playwright tests for release sign-off."
+}
